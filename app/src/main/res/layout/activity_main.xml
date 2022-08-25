@@ -10,7 +10,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="50dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -18,25 +18,40 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
+            android:id="@+id/Registro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/cherry_swash_bold"
+            android:foregroundGravity="center"
+            android:text="API Rest Volley"
+            android:textAlignment="center"
+            android:textAllCaps="false"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/textView2"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="30dp"
             android:fontFamily="@font/arbutus_slab"
-            android:text="Dia" />
+            android:text="Identificador" />
 
         <EditText
-            android:id="@+id/Txt_Dia"
+            android:id="@+id/Txt_Id"
             android:layout_width="310dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="45dp"
             android:autofillHints=""
             android:ems="10"
-            android:maxLength="2"
             android:fontFamily="@font/castoro"
-            android:hint="Dia Festivo"
+            android:hint="ID"
             android:inputType="number" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="15dp" />
 
         <TextView
             android:id="@+id/textView3"
@@ -45,19 +60,22 @@
             android:layout_marginStart="50dp"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/arbutus_slab"
-            android:text="Mes" />
+            android:text="Nombre" />
 
         <EditText
-            android:id="@+id/Txt_Mes"
+            android:id="@+id/Txt_Nombre"
             android:layout_width="310dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="45dp"
             android:autofillHints=""
             android:ems="10"
-            android:maxLength="2"
             android:fontFamily="@font/castoro"
-            android:hint="Mes Festivo"
-            android:inputType="number" />
+            android:hint="Nombre"
+            android:inputType="textPersonName" />
+
+        <Space
+            android:layout_width="match_parent"
+            android:layout_height="15dp" />
 
         <TextView
             android:id="@+id/textView7"
@@ -66,19 +84,18 @@
             android:layout_marginStart="50dp"
             android:layout_marginTop="10dp"
             android:fontFamily="@font/arbutus_slab"
-            android:text="Año " />
+            android:text="Precio " />
 
         <EditText
-            android:id="@+id/Txt_Anio"
+            android:id="@+id/Txt_Precio"
             android:layout_width="310dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="45dp"
             android:autofillHints=""
             android:ems="10"
-            android:maxLength="4"
             android:fontFamily="@font/castoro"
-            android:hint="Año Festivo"
-            android:inputType="number" />
+            android:hint="Precio Producto"
+            android:inputType="numberDecimal" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -109,13 +126,12 @@
         <ListView
             android:id="@+id/ListaHoliday"
             android:layout_width="360dp"
-            android:layout_height="400dp"
+            android:layout_height="350dp"
             android:layout_marginStart="25dp"
             android:layout_marginTop="30dp"
             android:background="#0F1E9F77"
             android:fontFamily="@font/arbutus_slab"
             android:textAlignment="center" />
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

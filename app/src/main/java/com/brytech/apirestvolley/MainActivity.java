@@ -3,7 +3,6 @@ package com.brytech.apirestvolley;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.text.InputFilter;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -11,11 +10,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.brytech.apirestvolley.model.Holiday;
+import com.brytech.apirestvolley.model.Comment;
+import com.brytech.apirestvolley.model.Productos;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,8 +30,10 @@ public class MainActivity extends AppCompatActivity {
 
     ListView list;
 
-    EditText dia, mes, anio;
+    EditText id, nombre, precio;
     Button btn_get, btn_post;
+
+    private RequestQueue rq;
 
     ArrayAdapter adapter;
     ArrayList<String> datos = new ArrayList<>();
@@ -38,15 +43,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        dia = findViewById(R.id.Txt_Dia);
-        dia.getText().toString();
-        mes = findViewById(R.id.Txt_Mes);
-        mes.getText().toString();
-        anio = findViewById(R.id.Txt_Anio);
-        anio.getText().toString();
+        id = findViewById(R.id.Txt_Id);
+        nombre = findViewById(R.id.Txt_Nombre);
+        precio = findViewById(R.id.Txt_Precio);
 
         btn_get = findViewById(R.id.Btn_Get);
         btn_post = findViewById(R.id.Btn_Post);
+
+        rq = Volley.newRequestQueue(this);
 
         Inciar_Control();
 
@@ -63,11 +67,15 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (v.getId() == R.id.Btn_Get) {
 
-                    getHoliday();
+                    getComment();
                 }
                 if (v.getId() == R.id.Btn_Post) {
 
-                    postHoliday();
+                    if (!nombre.getText().toString().isEmpty() && !precio.getText().toString().isEmpty()) {
+                        postInsert();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Los Campos Deben Estar Llenos", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         };
@@ -75,9 +83,91 @@ public class MainActivity extends AppCompatActivity {
         btn_post.setOnClickListener(B);
     }
 
-    private void getHoliday() {
+    private void getComment() {
 
-        String url = "https://holidays.abstractapi.com/v1/?api_key=b2f3456201be4a81a43f0306fdb33d76&country=EC&year=2022&month=12&day=25";
+        String url = "https://jsonplaceholder.typicode.com/comments";
+
+        JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
+            @Override
+            public void onResponse(JSONArray response) {
+                PasarJsonComment(response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, "Error Al Obtener Get", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        Volley.newRequestQueue(this).add(jsonArrayRequest);
+    }
+
+    private void PasarJsonComment(JSONArray jsonArray) {
+
+        datos.clear();
+
+        for (int i = 0; i < jsonArray.length(); i++) {
+
+            JSONObject json = null;
+            Comment comment = new Comment();
+
+            try {
+                json = jsonArray.getJSONObject(i);
+
+                comment.setId(json.getString("id"));
+                comment.setName(json.getString("name"));
+                comment.setEmail(json.getString("email"));
+
+                //AGREGAR LOS DATOS AL LISTVIEW
+                datos.add(comment.toString());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+    }
+
+    public void postInsert() {
+
+        String url = "https://scratchya.com.ar/videosandroidjava/volley/insertar.php";
+        JSONObject parametros = new JSONObject();
+        try {
+            parametros.put("descripcion", nombre.getText().toString());
+            parametros.put("precio", precio.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        JsonObjectRequest requerimiento = new JsonObjectRequest(Request.Method.POST,
+                url,
+                parametros,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            if (response.get("respuesta").toString().equals("ok")) {
+                                Toast.makeText(MainActivity.this, "Datos Registrados Correctamente", Toast.LENGTH_SHORT).show();
+                                nombre.setText("");
+                                precio.setText("");
+                                getProdutos();
+                            } else
+                                Toast.makeText(MainActivity.this, response.get("respuesta").toString(), Toast.LENGTH_SHORT).show();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        rq.add(requerimiento);
+    }
+
+    private void getProdutos() {
+
+        String url = "https://scratchya.com.ar/videosandroidjava/volley/listar.php";
 
         JsonArrayRequest jsonArrayRequest = new JsonArrayRequest(url, new Response.Listener<JSONArray>() {
             @Override
@@ -98,42 +188,25 @@ public class MainActivity extends AppCompatActivity {
 
         datos.clear();
 
-        for (int i = 0; i < jsonArray.length(); i++) {
+        for (int i = 12; i < jsonArray.length(); i++) {
 
             JSONObject json = null;
-            Holiday holiday = new Holiday();
+            Productos productos = new Productos();
 
             try {
                 json = jsonArray.getJSONObject(i);
 
-                holiday.setName(json.getString("name"));
-                holiday.setCountry(json.getString("country"));
-                holiday.setLocation(json.getString("location"));
-                holiday.setDate(json.getString("date"));
-                holiday.setDate_year(json.getString("date_year"));
-                holiday.setDate_month(json.getString("date_month"));
-                holiday.setDate_day(json.getString("date_day"));
-                holiday.setWeek_day(json.getString("week_day"));
+                productos.setCodigo(json.getString("codigo"));
+                productos.setNombre(json.getString("descripcion"));
+                productos.setPrecio(json.getString("precio"));
 
                 //AGREGAR LOS DATOS AL LISTVIEW
-                datos.add("Nombre Feriado: " + holiday.getName());
-                datos.add("Ubicacion: " + holiday.getLocation());
-                datos.add("Codigo Pais: " + holiday.getCountry());
-                datos.add("Fecha Feriado: " + holiday.getDate());
-                datos.add("Año Feriado: " + holiday.getDate_year());
-                datos.add("Mes Feriado: " + holiday.getDate_month());
-                datos.add("Dia Feriado: " + holiday.getDate_day());
-                datos.add("Dia de la Semana Feriado: " + holiday.getWeek_day());
+                datos.add(productos.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         adapter.notifyDataSetChanged();
-    }
-
-    private void postHoliday() {
-
-
     }
 }
